@@ -1,0 +1,9 @@
+[template]
+prefix = "/services/nginx"
+keys = [ "/backend"]
+owner = "root"
+mode = "0644"
+src = "nginx.tmpl"
+dest = "/etc/nginx/sites-enabled/lb.conf"
+check_cmd = "/usr/sbin/nginx -t"
+reload_cmd = "/usr/sbin/service nginx reload"

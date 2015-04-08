@@ -1,0 +1,24 @@
+{{ range $backend := lsdir "/backend" }}
+    {{ $endpoint := printf "/backend/%s/endpoints" $backend }}
+        upstream {{ base $backend }} {
+        {{ $endpoints := printf "/backend/%s/endpoints/*" $backend }}{{ range gets $endpoints }}
+        {{ $id := printf .Key }}{{ with dir $id }}
+	server  {{ getv $id }};
+
+        {{ end }}
+        {{ end }}
+        }
+server {
+    #ssl_certificate /etc/nginx/certs/demo.pem;
+    #ssl_certificate_key /etc/nginx/certs/demo.key;
+
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+    {{ $hostname := printf "/backend/%s/hostname" $backend }}
+    server_name {{ getv $hostname }};
+
+    location / {
+        proxy_pass http://{{ base $backend }};
+        include /etc/nginx/proxy_params;
+    }
+}
+{{ end }}
